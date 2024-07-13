@@ -1,0 +1,82 @@
+import javax.swing.JFrame;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
+import java.awt.BorderLayout;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.List;
+
+public class SalaryInfoGUI extends javax.swing.JFrame {
+
+    private DefaultTableModel salaryTableModel;
+
+    public SalaryInfoGUI(String username, List<Employee> employees) {
+        initComponents();
+        setTitle("Salary Information - " + username);
+
+        // Initialize the salary table model
+        salaryTableModel = new DefaultTableModel();
+        salaryTableModel.addColumn("Employee Number");
+        salaryTableModel.addColumn("Basic Salary");
+        salaryTableModel.addColumn("Rice Subsidy");
+        salaryTableModel.addColumn("Phone Allowance");
+        salaryTableModel.addColumn("Clothing Allowance");
+        salaryTableModel.addColumn("Gross Semi-Monthly Rate");
+        salaryTableModel.addColumn("Hourly Rate");
+
+        // Load salary information from salaries.csv
+        loadSalaryInformation(employees);
+
+        // Set the model to the table
+        salaryTable.setModel(salaryTableModel);
+    }
+
+    // Method to load salary information from salaries.csv
+    private void loadSalaryInformation(List<Employee> employees) {
+        for (Employee emp : employees) {
+            // Assuming salaries.csv has the same structure as employees.csv but with salary information
+            String[] salaryData = readSalaryFromCSV("salaries.csv", emp.getEmployeeNumber());
+            if (salaryData != null) {
+                salaryTableModel.addRow(salaryData);
+            }
+        }
+    }
+
+    // Method to read salary data for a specific employee from salaries.csv
+    private String[] readSalaryFromCSV(String filePath, String employeeNumber) {
+        String line;
+        String[] salaryData = null;
+
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            // Skip header line
+            br.readLine();
+
+            while ((line = br.readLine()) != null) {
+                String[] data = line.split(",");
+                if (data.length == 7 && data[0].equals(employeeNumber)) { // Assuming 7 fields in salaries.csv
+                    salaryData = data;
+                    break;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return salaryData;
+    }
+
+    // Auto-generated code by NetBeans
+    private void initComponents() {
+        // Component initialization code here
+        // ...
+
+        pack();
+    }
+
+    // Variables declaration - do not modify                     
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable salaryTable;
+    // End of variables declaration                   
+}
